@@ -6022,7 +6022,24 @@ welcomeText.style.marginBottom = "10px"; // Khoảng cách dưới 10px
 
 
 // Tạo phần tử p cho dòng chữ "- Nhấn để tiếp tục -"
+var continueText = document.createElement("p");
+continueText.style.fontFamily = "Quicksand";
+continueText.style.fontSize = "12px";
+continueText.textContent = "- Click to continue -";
 
+
+
+// Thêm các phần tử vào phần tử textDiv
+textDiv.appendChild(welcomeText);
+textDiv.appendChild(continueText);
+
+// Thêm phần tử textDiv vào overlay
+overlay.appendChild(textDiv);
+
+// Thiết lập sự kiện click cho overlay
+overlay.addEventListener("click", function () {
+    // Ẩn overlay
+    overlay.style.display = "none";
 
     // Thêm mã JavaScript của bạn để bắt đầu phát nhạc hoặc thực hiện các hành động khác ở đây
 });
