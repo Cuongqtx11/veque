@@ -5872,7 +5872,7 @@ function star() {
 }
 function show_date_time() {
     window.setTimeout("show_date_time()", 1000);
-    BirthDay = new Date("2023/09/24");
+    BirthDay = new Date("2029/02/16");
     today = new Date();
     timeold = (today.getTime() - BirthDay.getTime());
     sectimeold = timeold / 1000
