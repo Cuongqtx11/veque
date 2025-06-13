@@ -5,41 +5,35 @@
   <title>Đập Hộp Quà May Mắn</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    html, body {
-      width: 300px;
-      height: 500px;
+    body {
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom, #fff1e0, #ffd1b3);
       margin: 0;
-      padding: 10px 15px;
-      box-sizing: border-box;
+      padding: 20px;
       text-align: center;
-      overflow: hidden;
     }
 
     h1 {
-      font-size: 18px;
-      margin: 8px 0;
       color: #c0392b;
       text-shadow: 1px 1px 2px #fff;
     }
 
     .gift-container {
       display: grid;
-      grid-template-columns: repeat(3, 60px);
-      grid-gap: 10px;
+      grid-template-columns: repeat(3, 80px);
+      grid-gap: 15px;
       justify-content: center;
-      margin: 12px 0;
+      margin: 30px 0;
     }
 
     .gift-box {
-      width: 60px;
-      height: 60px;
+      width: 80px;
+      height: 80px;
       background: linear-gradient(135deg, #ff4d4d, #cc0000);
-      border-radius: 8px;
+      border-radius: 10px;
       position: relative;
       cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       transition: transform 0.2s;
     }
 
@@ -47,28 +41,28 @@
       content: "";
       position: absolute;
       top: 0;
-      left: 6px;
-      width: 48px;
-      height: 16px;
+      left: 8px;
+      width: 64px;
+      height: 20px;
       background: #fff;
-      border-radius: 6px 6px 0 0;
+      border-radius: 8px 8px 0 0;
     }
 
     .gift-box::after {
       content: "";
       position: absolute;
-      top: 16px;
+      top: 20px;
       left: 50%;
-      width: 8px;
-      height: 44px;
+      width: 10px;
+      height: 60px;
       background: gold;
       transform: translateX(-50%);
-      border-radius: 4px;
+      border-radius: 5px;
     }
 
     .highlight {
-      transform: scale(1.1);
-      box-shadow: 0 0 10px 3px #f1c40f;
+      transform: scale(1.15);
+      box-shadow: 0 0 15px 4px #f1c40f;
       z-index: 2;
     }
 
@@ -76,12 +70,12 @@
       background: #e74c3c;
       border: none;
       color: white;
-      font-size: 14px;
-      padding: 8px 18px;
-      border-radius: 6px;
+      font-size: 18px;
+      padding: 10px 24px;
+      border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      margin-top: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      margin-top: 10px;
     }
 
     #btnSpin:disabled {
@@ -91,27 +85,23 @@
     }
 
     .info, .countdown, .result {
-      font-size: 13px;
-      margin: 6px 0;
+      font-size: 16px;
+      margin: 10px 0;
     }
 
-    .result {
-      font-size: 14px;
-      color: #d35400;
-      min-height: 30px;
-      padding: 4px;
-    }
+	.result {
+  	font-size: 14px;
+  	color: #d35400;
+  	min-height: 30px;
+  	padding: 8px 10px;
+  	margin: 10px auto 0;
+  	background: rgba(255, 255, 255, 0.7);
+  	border-radius: 8px;
+  	max-width: 220px;
+  	box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  	text-align: center;
+	}
 
-    .result button {
-      margin-top: 6px;
-      padding: 6px 10px;
-      font-size: 13px;
-      border: none;
-      border-radius: 5px;
-      background: #2ecc71;
-      color: #fff;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
@@ -135,6 +125,7 @@
     const resultBox = document.getElementById("resultBox");
     const timerSpan = document.getElementById("timer");
 
+    // 🎁 Mã giảm giá riêng, có xác suất riêng và link
     const rewards = [
       { label: "🎁 Mã giảm giá 20%", probability: 10, link: "https://cuios.shop/coupon/sale" },
       { label: "🎁 Mã giảm giá 25%", probability: 5,  link: "https://cuios.shop/coupon/MiniGame" },
@@ -142,6 +133,7 @@
       { label: "🎉 +1 lượt", probability: 8 }
     ];
 
+    // ✅ Nhóm lời chúc chung với xác suất riêng
     const luckyMessages = [
       "🍀 Chúc bạn may mắn lần sau!",
       "🎊 Cảm ơn bạn, hẹn gặp lại!",
@@ -149,8 +141,9 @@
       "📦 Chưa được! Quà đang chờ mở!",
       "🎉 Gần trúng rồi! Quay lại nhé!"
     ];
-    const luckyGroupProbability = 70;
+    const luckyGroupProbability = 70; // % cho cả nhóm lời chúc
 
+    // Render các ô trứng
     for (let i = 0; i < totalBoxes; i++) {
       const box = document.createElement("div");
       box.className = "gift-box";
@@ -210,10 +203,13 @@
       const total = rewards.reduce((sum, r) => sum + r.probability, 0) + luckyGroupProbability;
       const rand = Math.random() * total;
       let sum = 0;
+
       for (const reward of rewards) {
         sum += reward.probability;
         if (rand < sum) return reward;
       }
+
+      // Nếu không trúng phần thưởng cụ thể → random lời chúc
       const randomMessage = luckyMessages[Math.floor(Math.random() * luckyMessages.length)];
       return { label: randomMessage };
     }
@@ -258,6 +254,14 @@
       if (reward.link) {
         const btn = document.createElement("button");
         btn.textContent = "🎁 Nhận mã";
+        btn.style.marginTop = "10px";
+        btn.style.padding = "8px 14px";
+        btn.style.fontSize = "15px";
+        btn.style.border = "none";
+        btn.style.borderRadius = "6px";
+        btn.style.background = "#2ecc71";
+        btn.style.color = "#fff";
+        btn.style.cursor = "pointer";
         btn.onclick = () => window.location.href = reward.link;
         resultBox.appendChild(btn);
       }
