@@ -1,67 +1,271 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Đập Hộp Quà May Mắn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #fff1e0, #ffd1b3);
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #c0392b;
+      text-shadow: 1px 1px 2px #fff;
+    }
+
+    .gift-container {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      grid-gap: 15px;
+      justify-content: center;
+      margin: 30px 0;
+    }
+
+    .gift-box {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #ff4d4d, #cc0000);
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+
+    .gift-box::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 8px;
+      width: 64px;
+      height: 20px;
+      background: #fff;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .gift-box::after {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      width: 10px;
+      height: 60px;
+      background: gold;
+      transform: translateX(-50%);
+      border-radius: 5px;
+    }
+
+    .highlight {
+      transform: scale(1.15);
+      box-shadow: 0 0 15px 4px #f1c40f;
+      z-index: 2;
+    }
+
+    #btnSpin {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      font-size: 18px;
+      padding: 10px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      margin-top: 10px;
+    }
+
+    #btnSpin:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .info, .countdown, .result {
+      font-size: 16px;
+      margin: 10px 0;
+    }
+
+    .result {
+      font-size: 20px;
+      color: #d35400;
+      min-height: 30px;
+    }
+  </style>
 </head>
+<body>
+  <h1>🎁Mở Hộp Nhận Quà🎁</h1>
+  <div class="gift-container" id="giftContainer"></div>
 
-<link rel="stylesheet" href="style.css">
-<script src="default.js"></script>
+  <button id="btnSpin">Quay</button>
 
-<div class="tab">
-  <button class="tablink" onclick="openTab('tab1')">Công dụng chứng chỉ </button>
-  <button class="tablink" onclick="openTab('tab2')">Công dụng UnlockIPA </button>
-  <button class="tablink" onclick="openTab('tab3')">Các liên kết </button>
-</div>
+  <div class="info">Lượt còn: <span id="turns">0</span></div>
+  <div class="countdown">Reset sau: <span id="timer">--:--:--</span></div>
+  <div class="result" id="resultBox"></div>
 
-<div id="tab1" class="tabcontent">
-  <h2>Công dụng của chứng chỉ</h2>
-  <p1>Cài đặt IPA qua các app dưới đây:</p1>
-  <img src="https://i.imgur.com/olaIp52.jpeg" alt="Mô tả hình ảnh" style="width:45%;height:auto;"><br>
-  Ae có thể tải app ở mục nhận hàng khi done chứng chỉ:<br>
-  <img src="https://i.imgur.com/ww004nG.jpeg" alt="cách tải" style="width:40%; height: 40%;"><br>
-  <p1>Ae có thể xem video hd tại đây:</p1><br>
-  <div class="video-container">
-  <iframe width="100%" height="350" src="https://youtube.com/embed/vKfFrSbL7nA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-  </div>
-  <br/>
-  <n style="color: red;">Nhược điểm: </n>Ae phải tự tìm IPA trên các group hay trang mạng được người dùng chia sẻ
-  <p>Nếu ae thắc mắc về chứng chỉ iphone dùng để làm gì thì dưới đây là một số công dụng của nó:</p>
-  <p1>✅Nhân bản ứng dụng không giới hạn  </p1><br>
-  <a>(vd: 10 app zalo,facebook… sử dụng bình thường trên iphone của bạn)</a><br>
-  <p1>✅Cài ipa App Premium  </p1><br>
-  <a>(vd: youtube pre, ChatGPT pre,…)</a><br>
-  <p1>✅Cài Miễn Phí các app mất phí trên 📱  </p1><br>
-  <a>(vd: app Minecraft, shadowrocket,… cài ipa miễn phí )</a><br>
-  <p1>✅Cài các ứng dụng không có sẵn trên 📱 </p1><br>
-  <a>(vd: GTA, một số app lậu…)</a><br>
-  <p1>✅Cài app crack </p1><br>
-  <a>(vd: tiktok downvideo no logo,…)</a><br>
-  <p1>✅Cài Game Hack </p1><br>
-  <a>(vd: Liên quân mobile, mod skin, PUBG,…)</a><br>
-</div>
+  <script>
+    const MAX_TURNS = 5;
+    const RESET_INTERVAL = 24 * 60 * 60 * 1000;
+    const totalBoxes = 9;
 
-<div id="tab2" class="tabcontent" style="display:none">
-  <h2>App UnlockIPA</h2>
-  <p>Công dụng của app UnlockIPA  </p>
-  <img src="https://i.imgur.com/B7V01Eh.jpeg" alt="Mô tả hình ảnh" style="width:100%;height:auto;"><br>
-  <p12> ✅App chất lượng - Ví như AppStore </p12><br>
-  <p1>➡️Kho app có sẵn các game hack, app mod</p1><br>
-  <p1>➡️Cài đặt trực tiếp về máy chỉ với 1 click install</p1><br>
-  <br>
-  <n style="color: coral;font-size: 18px;">Một vài chức năng bá đạo trong unlock ae xem nhé👇</n>
-  <iframe width="100%" height="350" src="https://youtube.com/embed/tlP8uR8gNPE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    const giftContainer = document.getElementById("giftContainer");
+    const btnSpin = document.getElementById("btnSpin");
+    const turnsDisplay = document.getElementById("turns");
+    const resultBox = document.getElementById("resultBox");
+    const timerSpan = document.getElementById("timer");
 
-  <n style="color: lime; font-size: 18px;">Ưu Điểm: </n>Ae không phải tìm các ipa ở đâu cả vì nó có sẵn trong UnlockIPA <br>
-  <a>⚠️ Ae mua gói Combo hoặc các gói tặng kèm UnlockIPA tại</a><a href="https://cuios.shop"> Cuios.shop</a><a> mới có thể sử dụng UnlockIPA nhé ❤️ </a><br>
-</div>
+    // 🎁 Mã giảm giá riêng, có xác suất riêng và link
+    const rewards = [
+      { label: "🎁 Mã giảm giá 20%", probability: 10, link: "https://cuios.shop/coupon/sale" },
+      { label: "🎁 Mã giảm giá 25%", probability: 5,  link: "https://cuios.shop/coupon/MiniGame" },
+      { label: "🎁 Mã giảm giá 15%", probability: 7,  link: "https://cuios.shop/coupon/nay" },
+      { label: "🎉 +1 lượt", probability: 8 }
+    ];
 
-<div id="tab3" class="tabcontent" style="display:none">
-  <h2>Các liên kết </h2>
-  <p1>Web mua chứng chỉ: </p1><a href="https://cuios.shop">Tại đây!</a><br>
-  <p1>Group Telegram: </p1><a href="https://t.me/chungchicuios">Tại đây!</a><br>
-  <p1>Kênh IPA chuyên dùng: </p1><a href="https://t.me/fileipaios">Tại đây!</a><br>
-  <br>
-  <img src="https://i.pinimg.com/originals/82/61/3e/82613e80ccfa048a578814f0069719cf.gif" alt="Mô tả hình ảnh" style="width:100%;height:auto;"><br>
+    // ✅ Nhóm lời chúc chung với xác suất riêng
+    const luckyMessages = [
+      "🍀 Chúc bạn may mắn lần sau!",
+      "🎊 Cảm ơn bạn, hẹn gặp lại!",
+      "💥 Lần này chưa trúng, lần sau nhé!",
+      "📦 Chưa được! Quà đang chờ mở!",
+      "🎉 Gần trúng rồi! Quay lại nhé!"
+    ];
+    const luckyGroupProbability = 70; // % cho cả nhóm lời chúc
 
-</div>
+    // Render các ô trứng
+    for (let i = 0; i < totalBoxes; i++) {
+      const box = document.createElement("div");
+      box.className = "gift-box";
+      box.dataset.index = i;
+      giftContainer.appendChild(box);
+    }
+
+    let currentIndex = -1;
+    let state = loadState();
+    let turns = state.turns;
+    turnsDisplay.textContent = turns;
+
+    function loadState() {
+      const saved = JSON.parse(localStorage.getItem("giftGameState")) || {};
+      const now = Date.now();
+      if (!saved.lastReset || now - saved.lastReset >= RESET_INTERVAL) {
+        const newState = { turns: MAX_TURNS, lastReset: now };
+        localStorage.setItem("giftGameState", JSON.stringify(newState));
+        return newState;
+      }
+      return saved;
+    }
+
+    function saveState() {
+      localStorage.setItem("giftGameState", JSON.stringify(state));
+    }
+
+    function updateCountdown() {
+      const now = Date.now();
+      const resetAt = state.lastReset + RESET_INTERVAL;
+      const diff = Math.max(0, resetAt - now);
+      const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+      timerSpan.textContent = `${h}:${m}:${s}`;
+      if (diff <= 0) {
+        state = { turns: MAX_TURNS, lastReset: Date.now() };
+        saveState();
+        turns = state.turns;
+        turnsDisplay.textContent = turns;
+        resultBox.textContent = "";
+      }
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    function highlightBox(index) {
+      if (currentIndex >= 0) {
+        giftContainer.children[currentIndex].classList.remove("highlight");
+      }
+      giftContainer.children[index].classList.add("highlight");
+      currentIndex = index;
+    }
+
+    function getWeightedReward() {
+      const total = rewards.reduce((sum, r) => sum + r.probability, 0) + luckyGroupProbability;
+      const rand = Math.random() * total;
+      let sum = 0;
+
+      for (const reward of rewards) {
+        sum += reward.probability;
+        if (rand < sum) return reward;
+      }
+
+      // Nếu không trúng phần thưởng cụ thể → random lời chúc
+      const randomMessage = luckyMessages[Math.floor(Math.random() * luckyMessages.length)];
+      return { label: randomMessage };
+    }
+
+    function spin() {
+      if (turns <= 0) {
+        alert("Bạn đã hết lượt, hãy chờ reset sau 24h!");
+        return;
+      }
+
+      btnSpin.disabled = true;
+      resultBox.innerHTML = "";
+      turns--;
+      state.turns = turns;
+      turnsDisplay.textContent = turns;
+      saveState();
+
+      let count = 0;
+      const max = 25 + Math.floor(Math.random() * 10);
+      const slowStart = max - 10;
+      const reward = getWeightedReward();
+      const targetIndex = Math.floor(Math.random() * totalBoxes);
+
+      function step() {
+        const next = Math.floor(Math.random() * totalBoxes);
+        highlightBox(next);
+        count++;
+        let delay = count > slowStart ? 100 + (count - slowStart) * 20 : 60;
+        if (count >= max) {
+          highlightBox(targetIndex);
+          displayResult(reward);
+          btnSpin.disabled = false;
+          return;
+        }
+        setTimeout(step, delay);
+      }
+      step();
+    }
+
+    function displayResult(reward) {
+      resultBox.innerHTML = `<div>${reward.label}</div>`;
+      if (reward.link) {
+        const btn = document.createElement("button");
+        btn.textContent = "🎁 Nhận mã";
+        btn.style.marginTop = "10px";
+        btn.style.padding = "8px 14px";
+        btn.style.fontSize = "15px";
+        btn.style.border = "none";
+        btn.style.borderRadius = "6px";
+        btn.style.background = "#2ecc71";
+        btn.style.color = "#fff";
+        btn.style.cursor = "pointer";
+        btn.onclick = () => window.location.href = reward.link;
+        resultBox.appendChild(btn);
+      }
+      if (reward.label.includes("+1")) {
+        turns++;
+        state.turns = turns;
+        turnsDisplay.textContent = turns;
+        saveState();
+      }
+    }
+
+    btnSpin.addEventListener("click", spin);
+  </script>
+</body>
+</html>
