@@ -27,16 +27,16 @@
       margin: 8px 0;
     }
 
-    .gift-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 4%;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      max-width: 100%;
-      padding: 5px 0;
-    }
+		.gift-container {
+  		display: grid;
+  		grid-template-columns: repeat(3, 1fr);
+  		gap: 35px;
+  		justify-content: center;
+  		align-items: center;
+  		padding: 3px;
+  		margin: 0 auto;
+  		max-width: 240px;
+		}
 
     .gift-box {
       width: 100%;
@@ -78,17 +78,17 @@
       z-index: 2;
     }
 
-    #btnSpin {
-      background: #e74c3c;
-      border: none;
-      color: white;
-      font-size: 15px;
-      padding: 8px 18px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 5px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-    }
+		#btnSpin {
+  		background: #e74c3c;
+  		border: none;
+  		color: white;
+  		font-size: 15px;
+  		padding: 8px 18px;
+  		border-radius: 8px;
+  		cursor: pointer;
+  		margin-top: 20px; /* đã tăng lên */
+  		box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+		}
 
     #btnSpin:disabled {
       background: #ccc;
@@ -109,7 +109,6 @@
       border-radius: 8px;
       max-width: 240px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      background: #fff;
       color: #2c3e50;
     }
 
@@ -126,7 +125,7 @@
   </style>
 </head>
 <body>
-  <h1>🎁 Mở Hộp Quà 🎁</h1>
+  <h1>🎁 Hộp Quà May Mắn 🎁</h1>
   <div class="gift-container" id="giftContainer"></div>
   <button id="btnSpin">Quay</button>
   <div class="info">Lượt còn: <span id="turns">0</span></div>
