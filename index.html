@@ -95,7 +95,7 @@
       font-weight: 600;
       cursor: pointer;
     }
-  </style>
+  </style> 
 </head>
 <body>
   <h1>🎯 Hộp Quà May Mắn 🎯</h1>
@@ -131,14 +131,12 @@
   ];
   const luckyGroupProbability = 70;
 
-  // Hàm lấy thời gian hiện tại theo múi giờ VN (UTC+7)
   function getVietnamTimeNow() {
     const now = new Date();
     const utc = now.getTime() + now.getTimezoneOffset() * 60000;
     return new Date(utc + 7 * 60 * 60000);
   }
 
-  // Hàm lấy timestamp thời điểm 00:00 tiếp theo của VN (giờ hôm sau 0h)
   function getVietnamMidnightTimestamp() {
     const vnNow = getVietnamTimeNow();
     const midnight = new Date(vnNow);
@@ -147,49 +145,30 @@
     return midnight.getTime();
   }
 
-  // Lấy trạng thái game từ localStorage, hoặc khởi tạo mới
-  function loadState() {
-    let state = { turns: MAX_TURNS, resetAt: getVietnamMidnightTimestamp() };
-    try {
-      const saved = localStorage.getItem("giftGameState");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Nếu đã qua resetAt thì reset lượt
-        if (Date.now() >= parsed.resetAt) {
-          state.turns = MAX_TURNS;
-          state.resetAt = getVietnamMidnightTimestamp();
-        } else {
-          // Chưa tới reset giờ, giữ nguyên
-          state = parsed;
-        }
-      }
-    } catch (e) {
-      // Nếu lỗi parse thì khởi tạo lại trạng thái mặc định
-      state = { turns: MAX_TURNS, resetAt: getVietnamMidnightTimestamp() };
-    }
-    return state;
-  }
-
-  // Lưu trạng thái vào localStorage
+  // Giao tiếp với trang chính
   function saveState(state) {
-    localStorage.setItem("giftGameState", JSON.stringify(state));
+    parent.postMessage({ type: "SAVE_GIFT_STATE", data: state }, "*");
   }
 
-  // Kiểm tra reset lượt theo thời gian (chạy mỗi giây)
-  function checkReset() {
-    if (Date.now() >= state.resetAt) {
-      state.turns = MAX_TURNS;
-      state.resetAt = getVietnamMidnightTimestamp();
-      saveState(state);
+  function requestLoadState() {
+    parent.postMessage({ type: "REQUEST_GIFT_STATE" }, "*");
+  }
+
+  let state = { turns: MAX_TURNS, resetAt: getVietnamMidnightTimestamp() };
+  let turns = MAX_TURNS;
+
+  window.addEventListener("message", (e) => {
+    const data = e.data;
+    if (data?.type === "RESPONSE_GIFT_STATE") {
+      state = data.data || { turns: MAX_TURNS, resetAt: getVietnamMidnightTimestamp() };
+      if (Date.now() >= state.resetAt) {
+        state.turns = MAX_TURNS;
+        state.resetAt = getVietnamMidnightTimestamp();
+      }
       turns = state.turns;
       turnsDisplay.textContent = turns;
-      resultBox.textContent = "";
     }
-  }
-
-  let state = loadState();
-  let turns = state.turns;
-  turnsDisplay.textContent = turns;
+  });
 
   for (let i = 0; i < totalBoxes; i++) {
     const box = document.createElement("div");
@@ -275,8 +254,8 @@
 
   btnSpin.addEventListener("click", spin);
 
-  setInterval(checkReset, 1000);
+  // Gửi yêu cầu lấy trạng thái từ trang chính
+  requestLoadState();
 </script>
-
 </body>
 </html>
