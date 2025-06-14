@@ -3,283 +3,266 @@
 <head>
   <meta charset="UTF-8" />
   <title>Đập Hộp Quà May Mắn</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(to bottom, #fff1e0, #ffd1b3);
       margin: 0;
       padding: 10px;
       text-align: center;
       max-width: 300px;
-      height: 100%;
+      height: 500px;
+      box-sizing: border-box;
       overflow: hidden;
     }
-
     h1 {
-      font-size: 18px;
       color: #c0392b;
-      text-shadow: 1px 1px 2px #fff;
-      margin: 8px 0;
+      margin-bottom: 8px;
+      font-size: 20px;
     }
-
-		.gift-container {
-  		display: grid;
-  		grid-template-columns: repeat(3, 1fr);
-  		gap: 35px;
-  		justify-content: center;
-  		align-items: center;
-  		padding: 3px;
-  		margin: 0 auto;
-  		max-width: 240px;
-		}
-
+    .gift-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      justify-content: center;
+      max-width: 260px;
+      margin: 10px auto 15px;
+    }
     .gift-box {
-      width: 100%;
-      aspect-ratio: 1 / 1;
+      width: 60px;
+      height: 60px;
       background: linear-gradient(135deg, #ff4d4d, #cc0000);
-      border-radius: 10%;
+      border-radius: 12px;
       position: relative;
       cursor: pointer;
-      box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-      transition: transform 0.2s;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+      transition: transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #fff;
+      user-select: none;
     }
-
-    .gift-box::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 8px;
-      width: 60%;
-      height: 10%;
-      background: #fff;
-      border-radius: 6px 6px 0 0;
+    .gift-box.highlight {
+      transform: scale(1.3);
+      box-shadow: 0 0 15px 4px #f1c40f;
+      z-index: 10;
     }
-
-    .gift-box::after {
-      content: "";
-      position: absolute;
-      top: 25%;
-      left: 50%;
-      width: 12%;
-      height: 60%;
-      background: gold;
-      transform: translateX(-50%);
-      border-radius: 4px;
+    #btnSpin {
+      margin-top: 12px;
+      background-color: #e74c3c;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      padding: 10px 28px;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
     }
-
-    .highlight {
-      transform: scale(1.15);
-      box-shadow: 0 0 12px 3px #f1c40f;
-      z-index: 2;
-    }
-
-		#btnSpin {
-  		background: #e74c3c;
-  		border: none;
-  		color: white;
-  		font-size: 15px;
-  		padding: 8px 18px;
-  		border-radius: 8px;
-  		cursor: pointer;
-  		margin-top: 20px; /* đã tăng lên */
-  		box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-		}
-
     #btnSpin:disabled {
-      background: #ccc;
+      background-color: #aaa;
       cursor: not-allowed;
       box-shadow: none;
     }
-
-    .info, .countdown, .result {
+    .info {
+      margin-top: 10px;
       font-size: 13px;
-      margin: 5px 0;
-    }
-
-    .result {
-      font-size: 13px;
-      min-height: 32px;
-      padding: 6px 8px;
-      margin: 8px auto 0;
-      border-radius: 8px;
-      max-width: 240px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       color: #2c3e50;
+      line-height: 1.3;
     }
-
+    .result {
+      margin-top: 14px;
+      min-height: 32px;
+      color: #2c3e50;
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      max-width: 280px;
+      margin-left: auto;
+      margin-right: auto;
+      user-select: none;
+    }
     .result button {
-      margin-top: 6px;
-      padding: 6px 12px;
-      font-size: 13px;
+      margin-top: 8px;
+      background-color: #27ae60;
       border: none;
       border-radius: 5px;
-      background: #2ecc71;
-      color: #fff;
+      padding: 6px 12px;
+      color: white;
+      font-weight: 600;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>🎁 Hộp Quà May Mắn 🎁</h1>
+  <h1>🎯 Hộp Quà May Mắn 🎯</h1>
   <div class="gift-container" id="giftContainer"></div>
   <button id="btnSpin">Quay</button>
   <div class="info">Lượt còn: <span id="turns">0</span></div>
-  <div class="countdown">Reset sau: <span id="timer">--:--:--</span></div>
+  <div class="info" style="margin-top:6px; font-style: italic; color:#555;">
+    Lượt chơi sẽ được làm mới lúc 00:00 giờ Việt Nam.
+  </div>
   <div class="result" id="resultBox"></div>
 
-  <script>
-    const MAX_TURNS = 5;
-    const RESET_INTERVAL = 24 * 60 * 60 * 1000;
-    const totalBoxes = 9;
+<script>
+  const MAX_TURNS = 5;
+  const totalBoxes = 9;
 
-    const giftContainer = document.getElementById("giftContainer");
-    const btnSpin = document.getElementById("btnSpin");
-    const turnsDisplay = document.getElementById("turns");
-    const resultBox = document.getElementById("resultBox");
-    const timerSpan = document.getElementById("timer");
+  const giftContainer = document.getElementById("giftContainer");
+  const btnSpin = document.getElementById("btnSpin");
+  const turnsDisplay = document.getElementById("turns");
+  const resultBox = document.getElementById("resultBox");
 
-    const rewards = [
-      { label: "🎁 Mã giảm giá 20%", probability: 10, link: "https://cuios.shop/coupon/sale" },
-      { label: "🎁 Mã giảm giá 25%", probability: 5,  link: "https://cuios.shop/coupon/MiniGame" },
-      { label: "🎁 Mã giảm giá 15%", probability: 7,  link: "https://cuios.shop/coupon/nay" },
-      { label: "🎉 +1 lượt", probability: 8 }
-    ];
+  const rewards = [
+    { label: "🎁 Mã giảm giá 20%", probability: 10, link: "https://cuios.shop/coupon/sale" },
+    { label: "🎁 Mã giảm giá 25%", probability: 5, link: "https://cuios.shop/coupon/MiniGame" },
+    { label: "🎁 Mã giảm giá 15%", probability: 7, link: "https://cuios.shop/coupon/nay" },
+    { label: "🎉 +1 lượt", probability: 8 }
+  ];
+  const luckyMessages = [
+    "🍀 Chúc bạn may mắn lần sau!",
+    "🎊 Cảm ơn bạn, hẹn gặp lại!",
+    "💥 Lần này chưa trúng, lần sau nhé!",
+    "📦 Chưa được! Quà đang chờ mở!",
+    "🎉 Gần trúng rồi! Quay lại nhé!"
+  ];
+  const luckyGroupProbability = 70;
 
-    const luckyMessages = [
-      "🍀 Chúc bạn may mắn lần sau!",
-      "🎊 Cảm ơn bạn, hẹn gặp lại!",
-      "💥 Lần này chưa trúng, lần sau nhé!",
-      "📦 Chưa được! Quà đang chờ mở!",
-      "🎉 Gần trúng rồi! Quay lại nhé!"
-    ];
-    const luckyGroupProbability = 70;
+  // Tạo 9 hộp quà (thay bằng icon 🎁)
+  for (let i = 0; i < totalBoxes; i++) {
+    const box = document.createElement("div");
+    box.className = "gift-box";
+    box.dataset.index = i;
+    box.textContent = "🎁";
+    giftContainer.appendChild(box);
+  }
 
-    for (let i = 0; i < totalBoxes; i++) {
-      const box = document.createElement("div");
-      box.className = "gift-box";
-      box.dataset.index = i;
-      giftContainer.appendChild(box);
+  let currentIndex = -1;
+
+  function getVietnamTimeNow() {
+    const now = new Date();
+    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+    return new Date(utc + 7 * 60 * 60000);
+  }
+
+  function getVietnamMidnightTimestamp() {
+    const vnNow = getVietnamTimeNow();
+    const midnight = new Date(vnNow);
+    midnight.setHours(0, 0, 0, 0);
+    midnight.setDate(midnight.getDate() + 1);
+    return midnight.getTime() - 7 * 60 * 60000; // UTC
+  }
+
+  function loadState() {
+    const saved = JSON.parse(localStorage.getItem("giftGameState")) || {};
+    const now = Date.now();
+    if (!saved.resetAt || now >= saved.resetAt) {
+      const resetAt = getVietnamMidnightTimestamp();
+      const newState = { turns: MAX_TURNS, resetAt };
+      localStorage.setItem("giftGameState", JSON.stringify(newState));
+      return newState;
+    }
+    return saved;
+  }
+
+  function saveState() {
+    localStorage.setItem("giftGameState", JSON.stringify(state));
+  }
+
+  // reset lượt nếu qua 00:00
+  function checkReset() {
+    const now = Date.now();
+    if (now >= state.resetAt) {
+      state = { turns: MAX_TURNS, resetAt: getVietnamMidnightTimestamp() };
+      saveState();
+      turns = state.turns;
+      turnsDisplay.textContent = turns;
+      resultBox.textContent = "";
+    }
+  }
+
+  setInterval(checkReset, 1000);
+
+  let state = loadState();
+  let turns = state.turns;
+  turnsDisplay.textContent = turns;
+
+  function highlightBox(index) {
+    if (currentIndex >= 0) {
+      giftContainer.children[currentIndex].classList.remove("highlight");
+    }
+    giftContainer.children[index].classList.add("highlight");
+    currentIndex = index;
+  }
+
+  function getWeightedReward() {
+    const total = rewards.reduce((sum, r) => sum + r.probability, 0) + luckyGroupProbability;
+    const rand = Math.random() * total;
+    let sum = 0;
+    for (const reward of rewards) {
+      sum += reward.probability;
+      if (rand < sum) return reward;
+    }
+    const msg = luckyMessages[Math.floor(Math.random() * luckyMessages.length)];
+    return { label: msg };
+  }
+
+  function spin() {
+    if (turns <= 0) {
+      alert("Bạn đã hết lượt, hãy chờ đến 00:00 để chơi tiếp!");
+      return;
     }
 
-    let currentIndex = -1;
-    let state = loadState();
-    let turns = state.turns;
+    btnSpin.disabled = true;
+    resultBox.innerHTML = "";
+    turns--;
+    state.turns = turns;
     turnsDisplay.textContent = turns;
+    saveState();
 
-    function loadState() {
-      const saved = JSON.parse(localStorage.getItem("giftGameState")) || {};
-      const now = Date.now();
-      if (!saved.lastReset || now - saved.lastReset >= RESET_INTERVAL) {
-        const newState = { turns: MAX_TURNS, lastReset: now };
-        localStorage.setItem("giftGameState", JSON.stringify(newState));
-        return newState;
-      }
-      return saved;
-    }
+    let count = 0;
+    const max = 25 + Math.floor(Math.random() * 10);
+    const slowStart = max - 10;
+    const reward = getWeightedReward();
+    const targetIndex = Math.floor(Math.random() * totalBoxes);
 
-    function saveState() {
-      localStorage.setItem("giftGameState", JSON.stringify(state));
-    }
-
-    function updateCountdown() {
-      const now = Date.now();
-      const resetAt = state.lastReset + RESET_INTERVAL;
-      const diff = Math.max(0, resetAt - now);
-      const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
-      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-      timerSpan.textContent = `${h}:${m}:${s}`;
-      if (diff <= 0) {
-        state = { turns: MAX_TURNS, lastReset: Date.now() };
-        saveState();
-        turns = state.turns;
-        turnsDisplay.textContent = turns;
-        resultBox.textContent = "";
-      }
-    }
-
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-
-    function highlightBox(index) {
-      if (currentIndex >= 0) {
-        giftContainer.children[currentIndex].classList.remove("highlight");
-      }
-      giftContainer.children[index].classList.add("highlight");
-      currentIndex = index;
-    }
-
-    function getWeightedReward() {
-      const total = rewards.reduce((sum, r) => sum + r.probability, 0) + luckyGroupProbability;
-      const rand = Math.random() * total;
-      let sum = 0;
-
-      for (const reward of rewards) {
-        sum += reward.probability;
-        if (rand < sum) return reward;
-      }
-
-      const randomMessage = luckyMessages[Math.floor(Math.random() * luckyMessages.length)];
-      return { label: randomMessage };
-    }
-
-    function spin() {
-      if (turns <= 0) {
-        alert("Bạn đã hết lượt, hãy chờ reset sau 24h!");
+    function step() {
+      const next = Math.floor(Math.random() * totalBoxes);
+      highlightBox(next);
+      count++;
+      let delay = count > slowStart ? 100 + (count - slowStart) * 20 : 60;
+      if (count >= max) {
+        highlightBox(targetIndex);
+        displayResult(reward);
+        btnSpin.disabled = false;
         return;
       }
+      setTimeout(step, delay);
+    }
 
-      btnSpin.disabled = true;
-      resultBox.innerHTML = "";
-      turns--;
+    step();
+  }
+
+  function displayResult(reward) {
+    resultBox.innerHTML = `<div>${reward.label}</div>`;
+    if (reward.link) {
+      const btn = document.createElement("button");
+      btn.textContent = "🎁 Nhận mã";
+      btn.onclick = () => window.open(reward.link, "_blank");
+      resultBox.appendChild(btn);
+    }
+    if (reward.label.includes("+1")) {
+      turns++;
       state.turns = turns;
       turnsDisplay.textContent = turns;
       saveState();
-
-      let count = 0;
-      const max = 25 + Math.floor(Math.random() * 10);
-      const slowStart = max - 10;
-      const reward = getWeightedReward();
-      const targetIndex = Math.floor(Math.random() * totalBoxes);
-
-      function step() {
-        const next = Math.floor(Math.random() * totalBoxes);
-        highlightBox(next);
-        count++;
-        let delay = count > slowStart ? 100 + (count - slowStart) * 20 : 60;
-        if (count >= max) {
-          highlightBox(targetIndex);
-          displayResult(reward);
-          btnSpin.disabled = false;
-          return;
-        }
-        setTimeout(step, delay);
-      }
-      step();
     }
+  }
 
-    function displayResult(reward) {
-      resultBox.innerHTML = `<div>${reward.label}</div>`;
-      if (reward.link) {
-        const btn = document.createElement("button");
-        btn.textContent = "🎁 Nhận mã";
-        btn.onclick = () => window.open(reward.link, '_blank');
-        resultBox.appendChild(btn);
-      }
-      if (reward.label.includes("+1")) {
-        turns++;
-        state.turns = turns;
-        turnsDisplay.textContent = turns;
-        saveState();
-      }
-    }
-
-    btnSpin.addEventListener("click", spin);
-  </script>
+  btnSpin.addEventListener("click", spin);
+</script>
 </body>
 </html>
