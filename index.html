@@ -131,16 +131,19 @@
   ];
   const luckyGroupProbability = 70;
 
-  // Tạo 9 hộp quà (thay bằng icon 🎁)
-  for (let i = 0; i < totalBoxes; i++) {
-    const box = document.createElement("div");
-    box.className = "gift-box";
-    box.dataset.index = i;
-    box.textContent = "🎁";
-    giftContainer.appendChild(box);
+  // -- TẠO ID CỦA THIẾT BỊ DỰA TRÊN USER AGENT + PLATFORM + LANGUAGE
+  function generateDeviceId() {
+    const raw = navigator.userAgent + navigator.platform + navigator.language;
+    let hash = 0;
+    for (let i = 0; i < raw.length; i++) {
+      hash = (hash << 5) - hash + raw.charCodeAt(i);
+      hash |= 0;
+    }
+    return "device_" + Math.abs(hash);
   }
 
-  let currentIndex = -1;
+  const deviceId = generateDeviceId();
+  const storageKey = "giftGameState_" + deviceId;
 
   function getVietnamTimeNow() {
     const now = new Date();
@@ -157,28 +160,27 @@
   }
 
   function loadState() {
-    const saved = JSON.parse(localStorage.getItem("giftGameState")) || {};
+    const saved = JSON.parse(localStorage.getItem(storageKey)) || {};
     const now = Date.now();
     if (!saved.resetAt || now >= saved.resetAt) {
       const resetAt = getVietnamMidnightTimestamp();
       const newState = { turns: MAX_TURNS, resetAt };
-      localStorage.setItem("giftGameState", JSON.stringify(newState));
+      localStorage.setItem(storageKey, JSON.stringify(newState));
       return newState;
     }
     return saved;
   }
 
   function saveState() {
-    localStorage.setItem("giftGameState", JSON.stringify(state));
+    localStorage.setItem(storageKey, JSON.stringify(state));
   }
 
-  // reset lượt nếu qua 00:00
   function checkReset() {
     const now = Date.now();
     if (now >= state.resetAt) {
       state = { turns: MAX_TURNS, resetAt: getVietnamMidnightTimestamp() };
-      saveState();
       turns = state.turns;
+      saveState();
       turnsDisplay.textContent = turns;
       resultBox.textContent = "";
     }
@@ -189,6 +191,16 @@
   let state = loadState();
   let turns = state.turns;
   turnsDisplay.textContent = turns;
+
+  // Tạo hộp quà
+  let currentIndex = -1;
+  for (let i = 0; i < totalBoxes; i++) {
+    const box = document.createElement("div");
+    box.className = "gift-box";
+    box.dataset.index = i;
+    box.textContent = "🎁";
+    giftContainer.appendChild(box);
+  }
 
   function highlightBox(index) {
     if (currentIndex >= 0) {
@@ -208,6 +220,22 @@
     }
     const msg = luckyMessages[Math.floor(Math.random() * luckyMessages.length)];
     return { label: msg };
+  }
+
+  function displayResult(reward) {
+    resultBox.innerHTML = `<div>${reward.label}</div>`;
+    if (reward.link) {
+      const btn = document.createElement("button");
+      btn.textContent = "🎁 Nhận mã";
+      btn.onclick = () => window.open(reward.link, "_blank");
+      resultBox.appendChild(btn);
+    }
+    if (reward.label.includes("+1")) {
+      turns++;
+      state.turns = turns;
+      turnsDisplay.textContent = turns;
+      saveState();
+    }
   }
 
   function spin() {
@@ -246,23 +274,8 @@
     step();
   }
 
-  function displayResult(reward) {
-    resultBox.innerHTML = `<div>${reward.label}</div>`;
-    if (reward.link) {
-      const btn = document.createElement("button");
-      btn.textContent = "🎁 Nhận mã";
-      btn.onclick = () => window.open(reward.link, "_blank");
-      resultBox.appendChild(btn);
-    }
-    if (reward.label.includes("+1")) {
-      turns++;
-      state.turns = turns;
-      turnsDisplay.textContent = turns;
-      saveState();
-    }
-  }
-
   btnSpin.addEventListener("click", spin);
 </script>
+
 </body>
 </html>
