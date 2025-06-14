@@ -131,20 +131,6 @@
   ];
   const luckyGroupProbability = 70;
 
-  // -- TẠO ID CỦA THIẾT BỊ DỰA TRÊN USER AGENT + PLATFORM + LANGUAGE
-  function generateDeviceId() {
-    const raw = navigator.userAgent + navigator.platform + navigator.language;
-    let hash = 0;
-    for (let i = 0; i < raw.length; i++) {
-      hash = (hash << 5) - hash + raw.charCodeAt(i);
-      hash |= 0;
-    }
-    return "device_" + Math.abs(hash);
-  }
-
-  const deviceId = generateDeviceId();
-  const storageKey = "giftGameState_" + deviceId;
-
   function getVietnamTimeNow() {
     const now = new Date();
     const utc = now.getTime() + now.getTimezoneOffset() * 60000;
@@ -156,31 +142,54 @@
     const midnight = new Date(vnNow);
     midnight.setHours(0, 0, 0, 0);
     midnight.setDate(midnight.getDate() + 1);
-    return midnight.getTime() - 7 * 60 * 60000; // UTC
+    return midnight.getTime();
+  }
+
+  function setCookie(name, value, days = 30) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (days*24*60*60*1000));
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/`;
+  }
+
+  function getCookie(name) {
+    const cookies = document.cookie.split("; ");
+    for (let i = 0; i < cookies.length; i++) {
+      const parts = cookies[i].split("=");
+      if (parts[0] === name) return decodeURIComponent(parts[1]);
+    }
+    return null;
   }
 
   function loadState() {
-    const saved = JSON.parse(localStorage.getItem(storageKey)) || {};
+    const saved = getCookie("giftGameState");
+    let state = {};
+    if (saved) {
+      try {
+        state = JSON.parse(saved);
+      } catch {}
+    }
+
     const now = Date.now();
-    if (!saved.resetAt || now >= saved.resetAt) {
+    if (!state.resetAt || now >= state.resetAt) {
       const resetAt = getVietnamMidnightTimestamp();
       const newState = { turns: MAX_TURNS, resetAt };
-      localStorage.setItem(storageKey, JSON.stringify(newState));
+      setCookie("giftGameState", JSON.stringify(newState));
       return newState;
     }
-    return saved;
+
+    return state;
   }
 
   function saveState() {
-    localStorage.setItem(storageKey, JSON.stringify(state));
+    setCookie("giftGameState", JSON.stringify(state));
   }
 
   function checkReset() {
     const now = Date.now();
     if (now >= state.resetAt) {
       state = { turns: MAX_TURNS, resetAt: getVietnamMidnightTimestamp() };
-      turns = state.turns;
       saveState();
+      turns = state.turns;
       turnsDisplay.textContent = turns;
       resultBox.textContent = "";
     }
@@ -192,8 +201,6 @@
   let turns = state.turns;
   turnsDisplay.textContent = turns;
 
-  // Tạo hộp quà
-  let currentIndex = -1;
   for (let i = 0; i < totalBoxes; i++) {
     const box = document.createElement("div");
     box.className = "gift-box";
@@ -201,6 +208,8 @@
     box.textContent = "🎁";
     giftContainer.appendChild(box);
   }
+
+  let currentIndex = -1;
 
   function highlightBox(index) {
     if (currentIndex >= 0) {
@@ -220,22 +229,6 @@
     }
     const msg = luckyMessages[Math.floor(Math.random() * luckyMessages.length)];
     return { label: msg };
-  }
-
-  function displayResult(reward) {
-    resultBox.innerHTML = `<div>${reward.label}</div>`;
-    if (reward.link) {
-      const btn = document.createElement("button");
-      btn.textContent = "🎁 Nhận mã";
-      btn.onclick = () => window.open(reward.link, "_blank");
-      resultBox.appendChild(btn);
-    }
-    if (reward.label.includes("+1")) {
-      turns++;
-      state.turns = turns;
-      turnsDisplay.textContent = turns;
-      saveState();
-    }
   }
 
   function spin() {
@@ -274,8 +267,25 @@
     step();
   }
 
+  function displayResult(reward) {
+    resultBox.innerHTML = `<div>${reward.label}</div>`;
+    if (reward.link) {
+      const btn = document.createElement("button");
+      btn.textContent = "🎁 Nhận mã";
+      btn.onclick = () => window.open(reward.link, "_blank");
+      resultBox.appendChild(btn);
+    }
+    if (reward.label.includes("+1")) {
+      turns++;
+      state.turns = turns;
+      turnsDisplay.textContent = turns;
+      saveState();
+    }
+  }
+
   btnSpin.addEventListener("click", spin);
 </script>
+
 
 </body>
 </html>
