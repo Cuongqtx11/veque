@@ -5,35 +5,47 @@
   <title>Đập Hộp Quà May Mắn</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom, #fff1e0, #ffd1b3);
       margin: 0;
-      padding: 20px;
+      padding: 10px;
       text-align: center;
+      max-width: 300px;
+      height: 100%;
+      overflow: hidden;
     }
 
     h1 {
+      font-size: 18px;
       color: #c0392b;
       text-shadow: 1px 1px 2px #fff;
+      margin: 8px 0;
     }
 
     .gift-container {
       display: grid;
-      grid-template-columns: repeat(3, 80px);
-      grid-gap: 15px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4%;
       justify-content: center;
-      margin: 30px 0;
+      align-items: center;
+      width: 100%;
+      max-width: 100%;
+      padding: 5px 0;
     }
 
     .gift-box {
-      width: 80px;
-      height: 80px;
+      width: 100%;
+      aspect-ratio: 1 / 1;
       background: linear-gradient(135deg, #ff4d4d, #cc0000);
-      border-radius: 10px;
+      border-radius: 10%;
       position: relative;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 3px 5px rgba(0,0,0,0.2);
       transition: transform 0.2s;
     }
 
@@ -42,27 +54,27 @@
       position: absolute;
       top: 0;
       left: 8px;
-      width: 64px;
-      height: 20px;
+      width: 60%;
+      height: 10%;
       background: #fff;
-      border-radius: 8px 8px 0 0;
+      border-radius: 6px 6px 0 0;
     }
 
     .gift-box::after {
       content: "";
       position: absolute;
-      top: 20px;
+      top: 25%;
       left: 50%;
-      width: 10px;
-      height: 60px;
+      width: 12%;
+      height: 60%;
       background: gold;
       transform: translateX(-50%);
-      border-radius: 5px;
+      border-radius: 4px;
     }
 
     .highlight {
       transform: scale(1.15);
-      box-shadow: 0 0 15px 4px #f1c40f;
+      box-shadow: 0 0 12px 3px #f1c40f;
       z-index: 2;
     }
 
@@ -70,12 +82,12 @@
       background: #e74c3c;
       border: none;
       color: white;
-      font-size: 18px;
-      padding: 10px 24px;
-      border-radius: 8px;
+      font-size: 15px;
+      padding: 8px 18px;
+      border-radius: 6px;
       cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      margin-top: 10px;
+      margin-top: 5px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
     }
 
     #btnSpin:disabled {
@@ -85,31 +97,38 @@
     }
 
     .info, .countdown, .result {
-      font-size: 16px;
-      margin: 10px 0;
+      font-size: 13px;
+      margin: 5px 0;
     }
 
-	.result {
-  	font-size: 14px;
-  	color: #d35400;
-  	min-height: 30px;
-  	padding: 8px 10px;
-  	margin: 10px auto 0;
-  	background: rgba(255, 255, 255, 0.7);
-  	border-radius: 8px;
-  	max-width: 220px;
-  	box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  	text-align: center;
-	}
+    .result {
+      font-size: 13px;
+      min-height: 32px;
+      padding: 6px 8px;
+      margin: 8px auto 0;
+      border-radius: 8px;
+      max-width: 240px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      background: #fff;
+      color: #2c3e50;
+    }
 
+    .result button {
+      margin-top: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      border: none;
+      border-radius: 5px;
+      background: #2ecc71;
+      color: #fff;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <h1>🎁Mở Hộp Nhận Quà🎁</h1>
+  <h1>🎁 Mở Hộp Quà 🎁</h1>
   <div class="gift-container" id="giftContainer"></div>
-
   <button id="btnSpin">Quay</button>
-
   <div class="info">Lượt còn: <span id="turns">0</span></div>
   <div class="countdown">Reset sau: <span id="timer">--:--:--</span></div>
   <div class="result" id="resultBox"></div>
@@ -125,7 +144,6 @@
     const resultBox = document.getElementById("resultBox");
     const timerSpan = document.getElementById("timer");
 
-    // 🎁 Mã giảm giá riêng, có xác suất riêng và link
     const rewards = [
       { label: "🎁 Mã giảm giá 20%", probability: 10, link: "https://cuios.shop/coupon/sale" },
       { label: "🎁 Mã giảm giá 25%", probability: 5,  link: "https://cuios.shop/coupon/MiniGame" },
@@ -133,7 +151,6 @@
       { label: "🎉 +1 lượt", probability: 8 }
     ];
 
-    // ✅ Nhóm lời chúc chung với xác suất riêng
     const luckyMessages = [
       "🍀 Chúc bạn may mắn lần sau!",
       "🎊 Cảm ơn bạn, hẹn gặp lại!",
@@ -141,9 +158,8 @@
       "📦 Chưa được! Quà đang chờ mở!",
       "🎉 Gần trúng rồi! Quay lại nhé!"
     ];
-    const luckyGroupProbability = 70; // % cho cả nhóm lời chúc
+    const luckyGroupProbability = 70;
 
-    // Render các ô trứng
     for (let i = 0; i < totalBoxes; i++) {
       const box = document.createElement("div");
       box.className = "gift-box";
@@ -209,7 +225,6 @@
         if (rand < sum) return reward;
       }
 
-      // Nếu không trúng phần thưởng cụ thể → random lời chúc
       const randomMessage = luckyMessages[Math.floor(Math.random() * luckyMessages.length)];
       return { label: randomMessage };
     }
@@ -254,15 +269,7 @@
       if (reward.link) {
         const btn = document.createElement("button");
         btn.textContent = "🎁 Nhận mã";
-        btn.style.marginTop = "10px";
-        btn.style.padding = "8px 14px";
-        btn.style.fontSize = "15px";
-        btn.style.border = "none";
-        btn.style.borderRadius = "6px";
-        btn.style.background = "#2ecc71";
-        btn.style.color = "#fff";
-        btn.style.cursor = "pointer";
-        btn.onclick = () => window.location.href = reward.link;
+        btn.onclick = () => window.open(reward.link, '_blank');
         resultBox.appendChild(btn);
       }
       if (reward.label.includes("+1")) {
