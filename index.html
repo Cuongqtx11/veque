@@ -131,12 +131,14 @@
   ];
   const luckyGroupProbability = 70;
 
+  // Hàm lấy thời gian hiện tại theo múi giờ VN (UTC+7)
   function getVietnamTimeNow() {
     const now = new Date();
     const utc = now.getTime() + now.getTimezoneOffset() * 60000;
     return new Date(utc + 7 * 60 * 60000);
   }
 
+  // Hàm lấy timestamp thời điểm 00:00 tiếp theo của VN (giờ hôm sau 0h)
   function getVietnamMidnightTimestamp() {
     const vnNow = getVietnamTimeNow();
     const midnight = new Date(vnNow);
@@ -145,62 +147,45 @@
     return midnight.getTime();
   }
 
-  function setCookie(name, value, days = 30) {
-    const expires = new Date();
-    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/`;
-  }
-
-  function getCookie(name) {
-    const cookies = document.cookie.split("; ");
-    for (let i = 0; i < cookies.length; i++) {
-      const parts = cookies[i].split("=");
-      if (parts[0] === name) return decodeURIComponent(parts[1]);
-    }
-    return null;
-  }
-
-  // Load trạng thái lượt chơi, chỉ reset sau 00:00 giờ VN
+  // Lấy trạng thái game từ localStorage, hoặc khởi tạo mới
   function loadState() {
-    const saved = getCookie("giftGameState");
-    let state = {};
+    let state = { turns: MAX_TURNS, resetAt: getVietnamMidnightTimestamp() };
     try {
-      state = saved ? JSON.parse(saved) : {};
-    } catch {}
-
-    const now = Date.now();
-    const currentResetAt = state.resetAt || 0;
-
-    // Nếu chưa có resetAt hoặc đã qua thời điểm reset thì reset lượt
-    if (!state.resetAt || now >= currentResetAt) {
-      const resetAt = getVietnamMidnightTimestamp();
-      state = {
-        turns: MAX_TURNS,
-        resetAt: resetAt
-      };
-      setCookie("giftGameState", JSON.stringify(state));
+      const saved = localStorage.getItem("giftGameState");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Nếu đã qua resetAt thì reset lượt
+        if (Date.now() >= parsed.resetAt) {
+          state.turns = MAX_TURNS;
+          state.resetAt = getVietnamMidnightTimestamp();
+        } else {
+          // Chưa tới reset giờ, giữ nguyên
+          state = parsed;
+        }
+      }
+    } catch (e) {
+      // Nếu lỗi parse thì khởi tạo lại trạng thái mặc định
+      state = { turns: MAX_TURNS, resetAt: getVietnamMidnightTimestamp() };
     }
-
     return state;
   }
 
-  function saveState() {
-    setCookie("giftGameState", JSON.stringify(state));
+  // Lưu trạng thái vào localStorage
+  function saveState(state) {
+    localStorage.setItem("giftGameState", JSON.stringify(state));
   }
 
-  // Kiểm tra liên tục để reset lượt khi qua 00:00
+  // Kiểm tra reset lượt theo thời gian (chạy mỗi giây)
   function checkReset() {
-    const now = Date.now();
-    if (now >= state.resetAt) {
-      state = { turns: MAX_TURNS, resetAt: getVietnamMidnightTimestamp() };
-      saveState();
+    if (Date.now() >= state.resetAt) {
+      state.turns = MAX_TURNS;
+      state.resetAt = getVietnamMidnightTimestamp();
+      saveState(state);
       turns = state.turns;
       turnsDisplay.textContent = turns;
       resultBox.textContent = "";
     }
   }
-
-  setInterval(checkReset, 1000);
 
   let state = loadState();
   let turns = state.turns;
@@ -247,7 +232,7 @@
     turns--;
     state.turns = turns;
     turnsDisplay.textContent = turns;
-    saveState();
+    saveState(state);
 
     let count = 0;
     const max = 25 + Math.floor(Math.random() * 10);
@@ -284,14 +269,14 @@
       turns++;
       state.turns = turns;
       turnsDisplay.textContent = turns;
-      saveState();
+      saveState(state);
     }
   }
 
   btnSpin.addEventListener("click", spin);
+
+  setInterval(checkReset, 1000);
 </script>
-
-
 
 </body>
 </html>
